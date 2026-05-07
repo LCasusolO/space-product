@@ -86,23 +86,6 @@
         </div>
     </div>
 
-    <!-- UI Overlay (Cabecera) -->
-    <div class="fixed top-0 left-0 w-full z-10 flex justify-between items-center p-4 bg-white/80 backdrop-blur-md pointer-events-none" id="main-ui">
-        <div class="flex flex-col">
-            <div class="text-xl font-bold text-gray-900">Exportaciones Perú: <span class="font-normal text-blue-600" id="total-value-display">$0</span></div>
-            <div class="flex items-center mt-2 text-sm text-gray-600">
-                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-                Haz clic y arrastra para explorar
-            </div>
-        </div>
-        
-        <h1 class="text-2xl font-bold text-gray-900 absolute left-1/2 transform -translate-x-1/2 top-4">
-            Perú en el Espacio de Productos, 2024
-        </h1>
-        
-        <div></div> 
-    </div>
-
     <!-- Aviso de Datos Incompletos -->
     <div id="data-warning" class="fixed bottom-6 right-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-lg z-20 max-w-sm" style="display: none;">
         <div class="flex">
@@ -1117,9 +1100,7 @@
                     color: color
                 });
             });
-
-            document.getElementById('total-value-display').innerText = formatMoney(totalExportValuePeru);
-            
+           
             const loadingScreen = document.getElementById('loading-screen');
             loadingScreen.style.opacity = '0';
             setTimeout(() => loadingScreen.style.display = 'none', 800);
