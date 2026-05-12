@@ -104,12 +104,9 @@
     </div>
 
     <div id="chart-container"></div>
-<!-- Interactive Legend UI (Barra Superior Compacta) -->
-    <div id="legend-container" class="fixed top-2 left-1/2 transform -translate-x-1/2 bg-white/95 border border-gray-200 py-1.5 px-3 rounded-lg shadow-md z-20 w-[96vw] xl:w-auto backdrop-blur-sm flex flex-col md:flex-row items-center gap-2">
-        <h3 class="font-bold text-[11px] text-gray-800 uppercase tracking-wide md:border-r md:border-gray-300 md:pr-2 whitespace-nowrap">
-            Filtrar Sector
-        </h3>
-        <div id="legend-items" class="flex flex-wrap justify-center md:justify-start gap-x-2 gap-y-0.5 w-full"></div>
+<!-- Interactive Legend UI (Barra Superior Súper Compacta) -->
+    <div id="legend-container" class="fixed top-2 left-1/2 transform -translate-x-1/2 bg-white/95 border border-gray-200 py-1 px-2 rounded-lg shadow-md z-20 w-[96vw] xl:w-auto backdrop-blur-sm flex items-center justify-center">
+        <div id="legend-items" class="flex flex-wrap justify-center gap-x-1.5 gap-y-0.5 w-full"></div>
     </div>
     
     <div id="tooltip"></div>
@@ -1236,12 +1233,13 @@ const formatMoney = (value) => {
             const legendContainer = d3.select("#legend-items");
             legendContainer.selectAll("*").remove();
 
-            // 2. Generate the legend items dynamically (VERSIÓN COMPACTA)
+           // 2. Generate the legend items dynamically (VERSIÓN SÚPER COMPACTA)
             activeSectorsKeys.forEach(sector => {
                 const color = sectorColors[sector] || sectorColors["OTROS"];
 
+                // 1. Botón más ajustado (px-1 py-0.5)
                 const item = legendContainer.append("div")
-                    .attr("class", "flex items-center cursor-pointer hover:bg-gray-100 px-1.5 py-0.5 rounded transition-all duration-200")
+                    .attr("class", "flex items-center cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition-all duration-200")
                     .on("click", function() {
                         // Toggle state logic
                         if (activeSectors.has(sector)) {
@@ -1266,15 +1264,15 @@ const formatMoney = (value) => {
                         updateDashboardVisibility();
                     });
 
-                // Sector color indicator (Más pequeño)
+                // 2. Círculo de color más pequeño (w-2 h-2 y mr-1)
                 item.append("div")
-                    .attr("class", "legend-box w-2.5 h-2.5 rounded-full mr-1.5 border transition-colors duration-200")
+                    .attr("class", "legend-box w-2 h-2 rounded-full mr-1 border transition-colors duration-200")
                     .style("background-color", color)
                     .style("border-color", d3.color(color).darker(0.5));
 
-                // Sector text label (Fuente más pequeña)
+                // 3. Fuente más pequeña (text-[9px] y leading-none para quitar espacios)
                 item.append("span")
-                    .attr("class", "legend-text text-[10px] font-semibold text-gray-700 transition-colors duration-200")
+                    .attr("class", "legend-text text-[9px] font-semibold text-gray-700 transition-colors duration-200 leading-none")
                     .text(sector);
             });
 
