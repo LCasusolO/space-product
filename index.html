@@ -104,6 +104,14 @@
     </div>
 
     <div id="chart-container"></div>
+<!-- Interactive Legend UI (Barra Superior Compacta) -->
+    <div id="legend-container" class="fixed top-2 left-1/2 transform -translate-x-1/2 bg-white/95 border border-gray-200 py-1.5 px-3 rounded-lg shadow-md z-20 w-[96vw] xl:w-auto backdrop-blur-sm flex flex-col md:flex-row items-center gap-2">
+        <h3 class="font-bold text-[11px] text-gray-800 uppercase tracking-wide md:border-r md:border-gray-300 md:pr-2 whitespace-nowrap">
+            Filtrar Sector
+        </h3>
+        <div id="legend-items" class="flex flex-wrap justify-center md:justify-start gap-x-2 gap-y-0.5 w-full"></div>
+    </div>
+    
     <div id="tooltip"></div>
 
     <script>
@@ -1218,6 +1226,76 @@ const formatMoney = (value) => {
                 .translate(width * ((1 - escalaInicial) / 2), height * ((1 - escalaInicial) / 2))
                 .scale(escalaInicial)
             );
+
+// ============================================================================
+            // INTERACTIVE LEGEND & FILTERING LOGIC
+            // ============================================================================
+            
+            // 1. Initialize all sectors as active
+            const activeSectors = new Set(activeSectorsKeys);
+            const legendContainer = d3.select("#legend-items");
+            legendContainer.selectAll("*").remove();
+
+            // 2. Generate the legend items dynamically (VERSIÓN COMPACTA)
+            activeSectorsKeys.forEach(sector => {
+                const color = sectorColors[sector] || sectorColors["OTROS"];
+
+                const item = legendContainer.append("div")
+                    .attr("class", "flex items-center cursor-pointer hover:bg-gray-100 px-1.5 py-0.5 rounded transition-all duration-200")
+                    .on("click", function() {
+                        // Toggle state logic
+                        if (activeSectors.has(sector)) {
+                            activeSectors.delete(sector);
+                            d3.select(this).select(".legend-box")
+                                .style("background-color", "transparent")
+                                .style("border-color", "#cbd5e1");
+                            d3.select(this).select(".legend-text")
+                                .classed("text-gray-400", true)
+                                .classed("text-gray-700", false)
+                                .classed("line-through", true);
+                        } else {
+                            activeSectors.add(sector);
+                            d3.select(this).select(".legend-box")
+                                .style("background-color", color)
+                                .style("border-color", d3.color(color).darker(0.5));
+                            d3.select(this).select(".legend-text")
+                                .classed("text-gray-400", false)
+                                .classed("text-gray-700", true)
+                                .classed("line-through", false);
+                        }
+                        updateDashboardVisibility();
+                    });
+
+                // Sector color indicator (Más pequeño)
+                item.append("div")
+                    .attr("class", "legend-box w-2.5 h-2.5 rounded-full mr-1.5 border transition-colors duration-200")
+                    .style("background-color", color)
+                    .style("border-color", d3.color(color).darker(0.5));
+
+                // Sector text label (Fuente más pequeña)
+                item.append("span")
+                    .attr("class", "legend-text text-[10px] font-semibold text-gray-700 transition-colors duration-200")
+                    .text(sector);
+            });
+
+            // 3. Function to update network visibility
+            function updateDashboardVisibility() {
+                // Fade out inactive nodes and disable tooltips on them
+                g.selectAll("circle")
+                    .transition().duration(300)
+                    .style("opacity", d => activeSectors.has(d.sectorKey) ? 1 : 0.05)
+                    .attr("pointer-events", d => activeSectors.has(d.sectorKey) ? "all" : "none");
+
+                // Fade out links if either source or target is filtered out
+                g.selectAll("line")
+                    .transition().duration(300)
+                    .style("opacity", d => (activeSectors.has(d.source.sectorKey) && activeSectors.has(d.target.sectorKey)) ? 0.7 : 0.02);
+
+                // Hide the floating category text labels if the sector is disabled
+                g.selectAll("text.category-label")
+                    .transition().duration(300)
+                    .style("opacity", d => activeSectors.has(d) ? 1 : 0);
+            }
 
             window.addEventListener('resize', () => {
                 svg.attr("width", window.innerWidth).attr("height", window.innerHeight);
